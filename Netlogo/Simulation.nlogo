@@ -12,10 +12,14 @@ people-own [
   wealth         ; [0,1]
   gender         ; 0 male | 1 female
   tau            ; threshold for changes
+  lockdown?      ; true if the person adhered to lockdown
   ;;;;;; variables for the model
   q*             ; total impact from other neighbors
   omega          ; sum of edges weights
   eta            ; speed factor
+  ;;;;;; nw variabes
+  degree         ; degree of the node
+  neigh_lockdown ; number of neighbors in lockdown
 ]
 
 undirected-link-breed [edges edge]
@@ -90,6 +94,12 @@ to setup-small-world
 end
 
 to setup-uniform
+  ifelse not test? [
+    nw:generate-lattice-2d people edges 10 10 false ; [ set color red ]
+  ][
+    nw:generate-lattice-2d people edges 3 3 false ;[ set color red ]
+  ]
+
 end
 
 ;;;;;;;;;;;;;;;;; LAYOUT ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -185,6 +195,10 @@ to setup-people
     set opinion random-float 1
     ; http://ccl.northwestern.edu/papers/ABMVisualizationGuidelines/palette/doc/NetLogo%20Color%20Howto%202.htm
     set color palette:scale-scheme  "Divergent" "RdYlGn" 4 opinion 0 1
+
+    set lockdown? false
+    ; network already created
+    set degree count my-links
   ]
   normalize-age
 end
@@ -245,10 +259,12 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to go
   update-opinion
+  update-lockdown
   if graphics? [
     setup-plot
     update-colors
   ]
+  if stop-condition [stop]
   tick
 end
 
@@ -286,7 +302,7 @@ to update-opinion
       type "q*: " type q* type "\n"
     ]
 
-    set eta alogistic omega sigma tau
+    set eta alogistic omega sigma (tau * degree)
 
     if debug? [type "eta (speed): " type eta type "\n"]
 
@@ -296,8 +312,49 @@ to update-opinion
   ]
 end
 
+to update-lockdown
+  ; before changes, save the number of neighbors
+  ask people[ set neigh_lockdown count link-neighbors with [lockdown?] ]
+
+  ask people [
+    if debug? [
+      type "Agent: " type [who] of self type " has degree " type degree type "\n"
+      type "Number of neighbors in lockdown: " type count link-neighbors with [lockdown?] type "\n"
+    ]
+
+    ifelse lockdown? [
+      if random-float 1 > opinion [
+        if neigh_lockdown < degree / 2 [set lockdown? false]
+      ]
+    ][ ; no lockdown
+      if random-float 1 < opinion [
+        ;if neigh_lockdown > degree / 2 [set lockdown? true]
+        set lockdown? true
+      ]
+    ]
+  ] ; end of ask people
+end
+
 to update-colors
-  ask people [set color palette:scale-scheme  "Divergent" "RdYlGn" 4 opinion 0 1]
+  ask people [
+    set color palette:scale-scheme  "Divergent" "RdYlGn" 4 opinion 0 1
+    ifelse lockdown? [
+      ask patches in-radius 2 [set pcolor blue]
+    ][
+      ask patches in-radius 2 [set pcolor red]
+    ]
+  ]
+
+  ;ask turtles [ask patches in-radius 3 [ set pcolor color ]]
+end
+
+to-report stop-condition
+  let sum_diffs 0
+  ask people [
+    set sum_diffs sum_diffs + abs(opinion - opinion_old)
+  ]
+  if debug? [type "Time: " type ticks type " Diffs: " type sum_diffs type "\n"]
+  ifelse sum_diffs < 0.001 [report true][report false]
 end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;                EXTRAS                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -423,7 +480,7 @@ CHOOSER
 nw-type
 nw-type
 "erdos-renyi" "small-world" "barabasi-albert" "uniform"
-0
+3
 
 SWITCH
 703
@@ -432,7 +489,7 @@ SWITCH
 81
 test?
 test?
-0
+1
 1
 -1000
 
@@ -444,7 +501,7 @@ CHOOSER
 layout-type
 layout-type
 "random" "spring" "circle" "radial" "equidistant" "centroid"
-5
+4
 
 PLOT
 480
