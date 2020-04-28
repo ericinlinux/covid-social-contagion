@@ -1,4 +1,4 @@
-extensions [nw palette rngs]
+extensions [nw palette rngs stats]
 ; to find a new palette palette:scheme-dialog
 
 breed [people person]
@@ -95,7 +95,7 @@ end
 
 to setup-uniform
   ifelse not test? [
-    nw:generate-lattice-2d people edges 10 10 false ; [ set color red ]
+    nw:generate-lattice-2d people edges 100 10 false ; [ set color red ]
   ][
     nw:generate-lattice-2d people edges 3 3 false ;[ set color red ]
   ]
@@ -291,7 +291,9 @@ to update-opinion
       ]
     ]
 
-    set q* impact / omega
+    ;set q* impact / omega
+    ;set q* alogistic impact sigma (tau * degree)
+    set q* alogistic (impact / omega) sigma (tau )
 
     if q* > 1 or q* < 0 [
       type "Omega for agent " type self type ": " type omega type "\n"
@@ -302,7 +304,8 @@ to update-opinion
       type "q*: " type q* type "\n"
     ]
 
-    set eta alogistic omega sigma (tau * degree)
+    ;set eta alogistic omega sigma (tau * degree)
+    set eta beta-distribution opinion 5 5
 
     if debug? [type "eta (speed): " type eta type "\n"]
 
@@ -322,16 +325,14 @@ to update-lockdown
       type "Number of neighbors in lockdown: " type count link-neighbors with [lockdown?] type "\n"
     ]
 
-    ifelse lockdown? [
-      if random-float 1 > opinion [
-        if neigh_lockdown < degree / 2 [set lockdown? false]
-      ]
-    ][ ; no lockdown
-      if random-float 1 < opinion [
-        ;if neigh_lockdown > degree / 2 [set lockdown? true]
-        set lockdown? true
-      ]
+
+    ifelse random-float 1 > opinion [
+      set lockdown? false
+    ][
+      ;if neigh_lockdown > degree / 2 [set lockdown? true]
+      set lockdown? true
     ]
+
   ] ; end of ask people
 end
 
@@ -367,6 +368,24 @@ to-report alogistic [ value sig t ]
   )
 end
 
+to-report beta-distribution [x alpha beta]
+  ifelse x < 0 or x > 1 [
+    report 0
+  ][
+    report ((x ^ (alpha - 1)) * ((1 - x) ^ (beta - 1))) / (beta_func alpha beta)
+  ]
+end
+
+to-report beta_func [a b]
+  report ((factorial a) * (factorial b)) / ((factorial (a + b)))
+end
+
+to-report factorial [parameter]
+  if parameter > 0 [report parameter * factorial (parameter - 1)]
+  report 1
+end
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;                PLOTS                   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -377,12 +396,20 @@ to setup-plot
     set-plot-pen-color color
     plotxy ticks opinion
   ]
+
+  set-current-plot "Lockdown" ;; identify which plot to use
+  create-temporary-plot-pen "Lockdown"
+  set-plot-pen-color blue
+  plot count people with [lockdown?]
+  create-temporary-plot-pen "Not Lockdown"
+  set-plot-pen-color red
+  plot count people with [not lockdown?]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-866
+976
 10
-1303
+1413
 448
 -1
 -1
@@ -480,7 +507,7 @@ CHOOSER
 nw-type
 nw-type
 "erdos-renyi" "small-world" "barabasi-albert" "uniform"
-3
+0
 
 SWITCH
 703
@@ -501,13 +528,13 @@ CHOOSER
 layout-type
 layout-type
 "random" "spring" "circle" "radial" "equidistant" "centroid"
-4
+0
 
 PLOT
-480
-139
-857
-446
+591
+141
+968
+448
 Opinions
 NIL
 NIL
@@ -557,10 +584,10 @@ sigma is the health authorities engagement to the lockdown policy
 1
 
 PLOT
-168
-286
-368
-436
+1216
+456
+1416
+606
 plot 1
 NIL
 NIL
@@ -587,6 +614,59 @@ graphics?
 0
 1
 -1000
+
+PLOT
+45
+400
+245
+550
+Beta
+NIL
+NIL
+0.0
+100.0
+0.0
+1.0
+false
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot beta-distribution (ticks / 100) 5 5 "
+
+PLOT
+249
+181
+585
+446
+Lockdown
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+
+PLOT
+247
+18
+447
+168
+Opinion (mean)
+NIL
+NIL
+0.0
+10.0
+0.0
+1.0
+true
+false
+"" ""
+PENS
+"Opinions (mean)" 1.0 0 -16777216 true "" "plot mean [opinion] of people"
 
 @#$#@#$#@
 ## WHAT IS IT?
