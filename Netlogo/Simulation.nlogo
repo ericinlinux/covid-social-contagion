@@ -293,7 +293,11 @@ to update-opinion
 
     ;set q* impact / omega
     ;set q* alogistic impact sigma (tau * degree)
-    set q* alogistic (impact / omega) sigma (tau )
+    ifelse degree > 0 [
+      set q* alogistic (impact / omega) sigma (tau )
+    ][
+      set q* opinion_old
+    ]
 
     if q* > 1 or q* < 0 [
       type "Omega for agent " type self type ": " type omega type "\n"
@@ -309,7 +313,11 @@ to update-opinion
 
     if debug? [type "eta (speed): " type eta type "\n"]
 
-    set opinion opinion_old + eta * (q* - opinion_old)
+    ; normal model
+    ;set opinion opinion_old + eta * (q* - opinion_old)
+
+    ; spiral model
+    set opinion opinion_old + eta * (beta-gov * (1 - (1 - q*) * (1 - opinion)) + ((1 - beta-gov) * q* * opinion) - opinion_old)
 
     if debug? [type "----------------------------------\nFinal q*: " type q* type "\n"]
   ]
@@ -400,10 +408,10 @@ to setup-plot
   set-current-plot "Lockdown" ;; identify which plot to use
   create-temporary-plot-pen "Lockdown"
   set-plot-pen-color blue
-  plot count people with [lockdown?]
+  plot count people with [lockdown?] * 100 / count people
   create-temporary-plot-pen "Not Lockdown"
   set-plot-pen-color red
-  plot count people with [not lockdown?]
+  plot count people with [not lockdown?] * 100 / count people
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -516,7 +524,7 @@ SWITCH
 81
 test?
 test?
-1
+0
 1
 -1000
 
@@ -644,7 +652,7 @@ NIL
 0.0
 10.0
 0.0
-10.0
+100.0
 true
 true
 "" ""
@@ -667,6 +675,21 @@ false
 "" ""
 PENS
 "Opinions (mean)" 1.0 0 -16777216 true "" "plot mean [opinion] of people"
+
+SLIDER
+12
+314
+220
+347
+beta-gov
+beta-gov
+0
+1
+0.5
+0.1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
