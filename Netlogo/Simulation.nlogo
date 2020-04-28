@@ -40,7 +40,7 @@ to setup
 
   setup-world
   setup-network
-  setup-layout
+  if graphics? [  setup-layout ]
   setup-people
   setup-edges
   reset-ticks
@@ -95,7 +95,7 @@ end
 
 to setup-uniform
   ifelse not test? [
-    nw:generate-lattice-2d people edges 100 10 false ; [ set color red ]
+    nw:generate-lattice-2d people edges 10 10 false ; [ set color red ]
   ][
     nw:generate-lattice-2d people edges 3 3 false ;[ set color red ]
   ]
@@ -348,9 +348,9 @@ to update-colors
   ask people [
     set color palette:scale-scheme  "Divergent" "RdYlGn" 4 opinion 0 1
     ifelse lockdown? [
-      ask patches in-radius 2 [set pcolor blue]
+      ask patches in-radius 1 [set pcolor blue]
     ][
-      ask patches in-radius 2 [set pcolor red]
+      ask patches in-radius 1 [set pcolor red]
     ]
   ]
 
@@ -450,7 +450,7 @@ pop-size
 pop-size
 0
 2000
-1000.0
+100.0
 50
 1
 people
@@ -515,7 +515,7 @@ CHOOSER
 nw-type
 nw-type
 "erdos-renyi" "small-world" "barabasi-albert" "uniform"
-0
+3
 
 SWITCH
 703
@@ -524,7 +524,7 @@ SWITCH
 81
 test?
 test?
-0
+1
 1
 -1000
 
@@ -564,7 +564,7 @@ sigma
 sigma
 0
 10
-5.0
+10.0
 1
 1
 NIL
@@ -619,7 +619,7 @@ SWITCH
 44
 graphics?
 graphics?
-0
+1
 1
 -1000
 
@@ -685,7 +685,7 @@ beta-gov
 beta-gov
 0
 1
-0.5
+0.2
 0.1
 1
 NIL
@@ -1037,6 +1037,48 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="Basic_100_people" repetitions="100" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count people with [lockdown?]</metric>
+    <metric>count people with [not lockdown?]</metric>
+    <metric>mean [opinion] of people</metric>
+    <enumeratedValueSet variable="beta-gov">
+      <value value="0.1"/>
+      <value value="0.3"/>
+      <value value="0.5"/>
+      <value value="0.7"/>
+      <value value="0.9"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="sigma">
+      <value value="1"/>
+      <value value="5"/>
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pop-size">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="layout-type">
+      <value value="&quot;random&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="graphics?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="debug?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="nw-type">
+      <value value="&quot;erdos-renyi&quot;"/>
+      <value value="&quot;small-world&quot;"/>
+      <value value="&quot;barabasi-albert&quot;"/>
+      <value value="&quot;uniform&quot;"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
