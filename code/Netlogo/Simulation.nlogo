@@ -1044,6 +1044,7 @@ NetLogo 6.1.1
     <metric>count people with [lockdown?]</metric>
     <metric>count people with [not lockdown?]</metric>
     <metric>mean [opinion] of people</metric>
+    <metric>standard-deviation [opinion] of people</metric>
     <enumeratedValueSet variable="beta-gov">
       <value value="0.1"/>
       <value value="0.3"/>
@@ -1084,6 +1085,7 @@ NetLogo 6.1.1
     <metric>count people with [lockdown?]</metric>
     <metric>count people with [not lockdown?]</metric>
     <metric>mean [opinion] of people</metric>
+    <metric>standard-deviation [opinion] of people</metric>
     <enumeratedValueSet variable="beta-gov">
       <value value="0.1"/>
       <value value="0.3"/>

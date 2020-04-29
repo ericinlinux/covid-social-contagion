@@ -8,14 +8,14 @@
 ./netlogo-headless.sh \
   --model Simulation.nlogo \
   --experiment Basic_100_people \
-  --table ./simulations/basic_100_people_table.csv \
-  --spreadsheet ./simulations/basic_100_people_spreadsheet.csv
+  --table ../results/basic_100_people_table.csv \
+  --spreadsheet ../results/basic_100_people_spreadsheet.csv
 ```
 
 ```
 ./netlogo-headless.sh \
   --model Simulation.nlogo \
   --experiment Basic_100_people_End \
-  --table ./simulations/basic_100_people_end_table.csv \
-  --spreadsheet ./simulations/basic_100_people_end_spreadsheet.csv
+  --table ../results/basic_100_people_end_table.csv \
+  --spreadsheet ../results/basic_100_people_end_spreadsheet.csv
 ```
