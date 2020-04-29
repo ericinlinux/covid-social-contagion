@@ -586,7 +586,7 @@ TEXTBOX
 242
 218
 310
-sigma is the health authorities engagement to the lockdown policy
+beta-gov is the health authorities engagement to the lockdown policy
 14
 0.0
 1
@@ -1039,6 +1039,46 @@ NetLogo 6.1.1
 @#$#@#$#@
 <experiments>
   <experiment name="Basic_100_people" repetitions="100" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count people with [lockdown?]</metric>
+    <metric>count people with [not lockdown?]</metric>
+    <metric>mean [opinion] of people</metric>
+    <enumeratedValueSet variable="beta-gov">
+      <value value="0.1"/>
+      <value value="0.3"/>
+      <value value="0.5"/>
+      <value value="0.7"/>
+      <value value="0.9"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="sigma">
+      <value value="1"/>
+      <value value="5"/>
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pop-size">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="layout-type">
+      <value value="&quot;random&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="graphics?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="debug?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="nw-type">
+      <value value="&quot;erdos-renyi&quot;"/>
+      <value value="&quot;small-world&quot;"/>
+      <value value="&quot;barabasi-albert&quot;"/>
+      <value value="&quot;uniform&quot;"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="Basic_100_people_End" repetitions="100" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <metric>count people with [lockdown?]</metric>
