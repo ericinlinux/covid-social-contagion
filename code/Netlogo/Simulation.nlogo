@@ -18,8 +18,12 @@ people-own [
   omega          ; sum of edges weights
   eta            ; speed factor
   ;;;;;; nw variabes
+  interv-target?
   degree         ; degree of the node
   neigh_lockdown ; number of neighbors in lockdown
+  eigen
+  betweenness
+  closeness
 ]
 
 undirected-link-breed [edges edge]
@@ -43,6 +47,7 @@ to setup
   if graphics? [  setup-layout ]
   setup-people
   setup-edges
+  if intervention? [ setup-interventions ]
   reset-ticks
 end
 
@@ -197,8 +202,12 @@ to setup-people
     set color palette:scale-scheme  "Divergent" "RdYlGn" 4 opinion 0 1
 
     set lockdown? false
+    set interv-target? false
     ; network already created
     set degree count my-links
+    set eigen nw:eigenvector-centrality
+    set betweenness nw:betweenness-centrality
+    set closeness nw:closeness-centrality
   ]
   normalize-age
 end
@@ -254,6 +263,45 @@ to setup-edges
   ]
 end
 
+to setup-interventions
+  let num_intervention perc-interventions * pop-size / 100
+
+  ifelse intervention-type = "eigen" [
+    ask max-n-of num_intervention people [eigen][
+      set opinion 1
+      set lockdown? true
+      set interv-target? true
+    ]
+  ][
+    ifelse intervention-type = "degree" [
+      ask max-n-of num_intervention people [degree][
+        set opinion 1
+        set lockdown? true
+        set interv-target? true
+      ]
+    ][
+      ifelse intervention-type = "betweenness" [
+        ask max-n-of num_intervention people [betweenness][
+          set opinion 1
+          set lockdown? true
+          set interv-target? true
+        ]
+      ][
+        ifelse intervention-type = "closeness" [
+          ask max-n-of num_intervention people [closeness][
+            set opinion 1
+            set lockdown? true
+            set interv-target? true
+          ]
+        ][
+          type "Error on intervention"
+          stop
+        ] ; else do "closeness"
+      ] ; else do betweenness
+    ] ; else do degree
+
+  ] ; else do eigen
+end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;                  GO                    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -272,7 +320,7 @@ to update-opinion
   ; save opinion
   ask people [ set opinion_old opinion ]
 
-  ask people [
+  ask people with [not interv-target?] [
     set q* 0
     set omega 0
     let impact 0
@@ -327,13 +375,11 @@ to update-lockdown
   ; before changes, save the number of neighbors
   ask people[ set neigh_lockdown count link-neighbors with [lockdown?] ]
 
-  ask people [
+  ask people with [not interv-target?][
     if debug? [
       type "Agent: " type [who] of self type " has degree " type degree type "\n"
       type "Number of neighbors in lockdown: " type count link-neighbors with [lockdown?] type "\n"
     ]
-
-
     ifelse random-float 1 > opinion [
       set lockdown? false
     ][
@@ -515,12 +561,12 @@ CHOOSER
 nw-type
 nw-type
 "erdos-renyi" "small-world" "barabasi-albert" "uniform"
-3
+0
 
 SWITCH
-703
+700
 48
-821
+841
 81
 test?
 test?
@@ -539,10 +585,10 @@ layout-type
 0
 
 PLOT
-591
-141
-968
-448
+593
+320
+970
+627
 Opinions
 NIL
 NIL
@@ -573,7 +619,7 @@ HORIZONTAL
 SWITCH
 702
 87
-820
+841
 120
 debug?
 debug?
@@ -615,11 +661,11 @@ PENS
 SWITCH
 704
 11
-821
+841
 44
 graphics?
 graphics?
-1
+0
 1
 -1000
 
@@ -689,6 +735,42 @@ beta-gov
 0.1
 1
 NIL
+HORIZONTAL
+
+CHOOSER
+700
+169
+838
+214
+intervention-type
+intervention-type
+"eigen" "degree" "betweenness" "closeness"
+0
+
+SWITCH
+701
+127
+839
+160
+intervention?
+intervention?
+0
+1
+-1000
+
+SLIDER
+700
+221
+861
+254
+perc-interventions
+perc-interventions
+0
+100
+10.0
+1
+1
+%
 HORIZONTAL
 
 @#$#@#$#@
@@ -1118,6 +1200,55 @@ NetLogo 6.1.1
       <value value="&quot;small-world&quot;"/>
       <value value="&quot;barabasi-albert&quot;"/>
       <value value="&quot;uniform&quot;"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="Interventions_100_people_End" repetitions="100" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count people with [lockdown?]</metric>
+    <metric>count people with [not lockdown?]</metric>
+    <metric>mean [opinion] of people</metric>
+    <metric>standard-deviation [opinion] of people</metric>
+    <enumeratedValueSet variable="beta-gov">
+      <value value="0.1"/>
+      <value value="0.5"/>
+      <value value="0.9"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="sigma">
+      <value value="1"/>
+      <value value="5"/>
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pop-size">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="layout-type">
+      <value value="&quot;random&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="graphics?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="debug?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="intervention?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="nw-type">
+      <value value="&quot;erdos-renyi&quot;"/>
+      <value value="&quot;small-world&quot;"/>
+      <value value="&quot;barabasi-albert&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="intervention-type">
+      <value value="&quot;eigen&quot;"/>
+      <value value="&quot;betweenness&quot;"/>
+      <value value="&quot;closeness&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="perc-interventions">
+      <value value="10"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>

@@ -19,3 +19,10 @@
   --table ../results/basic_100_people_end_table.csv \
   --spreadsheet ../results/basic_100_people_end_spreadsheet.csv
 ```
+
+
+./netlogo-headless.sh \
+  --model Simulation.nlogo \
+  --experiment Interventions_100_people_End \
+  --table ../results/interv_100_people_end_table.csv \
+  --spreadsheet ../results/interv_100_people_end_spreadsheet.csv
