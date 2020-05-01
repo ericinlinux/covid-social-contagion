@@ -461,13 +461,13 @@ to setup-plot
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-976
+790
 10
 1413
-448
+634
 -1
 -1
-13.0
+18.64
 1
 10
 1
@@ -564,10 +564,10 @@ nw-type
 0
 
 SWITCH
-700
-48
-841
-81
+12
+395
+153
+428
 test?
 test?
 1
@@ -585,10 +585,10 @@ layout-type
 0
 
 PLOT
-593
-320
-970
-627
+248
+10
+592
+241
 Opinions
 NIL
 NIL
@@ -617,10 +617,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-702
-87
-841
-120
+14
+434
+153
+467
 debug?
 debug?
 1
@@ -637,32 +637,11 @@ beta-gov is the health authorities engagement to the lockdown policy
 0.0
 1
 
-PLOT
-1216
-456
-1416
-606
-plot 1
-NIL
-NIL
-0.0
-10.0
-0.0
-2.0
-false
-false
-"" ""
-PENS
-"default" 1.0 0 -16777216 true "" "plot alogistic ticks sigma 0.7"
-"pen-1" 1.0 0 -7500403 true "" "plot (1 + e ^(- sigma * 0.7))"
-"pen-2" 1.0 0 -2674135 true "" "plot (1 / (1 + e ^ (-1 * sigma * (ticks - 0.7))) )"
-"pen-3" 1.0 0 -955883 true "" "plot (1 / (1 + e ^ (sigma * 0.7)))"
-
 SWITCH
-704
-11
-841
-44
+16
+358
+153
+391
 graphics?
 graphics?
 0
@@ -670,28 +649,10 @@ graphics?
 -1000
 
 PLOT
-45
-400
-245
-550
-Beta
-NIL
-NIL
-0.0
-100.0
-0.0
-1.0
-false
-false
-"" ""
-PENS
-"default" 1.0 0 -16777216 true "" "plot beta-distribution (ticks / 100) 5 5 "
-
-PLOT
-249
-181
-585
-446
+246
+248
+593
+464
 Lockdown
 NIL
 NIL
@@ -705,10 +666,10 @@ true
 PENS
 
 PLOT
-247
-18
-447
-168
+248
+476
+448
+626
 Opinion (mean)
 NIL
 NIL
@@ -738,20 +699,20 @@ NIL
 HORIZONTAL
 
 CHOOSER
-700
-169
-838
-214
+12
+516
+150
+561
 intervention-type
 intervention-type
 "eigen" "degree" "betweenness" "closeness"
 0
 
 SWITCH
-701
-127
-839
-160
+13
+474
+151
+507
 intervention?
 intervention?
 0
@@ -759,10 +720,10 @@ intervention?
 -1000
 
 SLIDER
-700
-221
-861
-254
+12
+568
+173
+601
 perc-interventions
 perc-interventions
 0
@@ -1249,6 +1210,55 @@ NetLogo 6.1.1
     </enumeratedValueSet>
     <enumeratedValueSet variable="perc-interventions">
       <value value="10"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="Interventions_100_people_End_20" repetitions="100" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count people with [lockdown?]</metric>
+    <metric>count people with [not lockdown?]</metric>
+    <metric>mean [opinion] of people</metric>
+    <metric>standard-deviation [opinion] of people</metric>
+    <enumeratedValueSet variable="beta-gov">
+      <value value="0.1"/>
+      <value value="0.5"/>
+      <value value="0.9"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="sigma">
+      <value value="1"/>
+      <value value="5"/>
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pop-size">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="layout-type">
+      <value value="&quot;random&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="graphics?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="debug?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="intervention?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="nw-type">
+      <value value="&quot;erdos-renyi&quot;"/>
+      <value value="&quot;small-world&quot;"/>
+      <value value="&quot;barabasi-albert&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="intervention-type">
+      <value value="&quot;eigen&quot;"/>
+      <value value="&quot;betweenness&quot;"/>
+      <value value="&quot;closeness&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="perc-interventions">
+      <value value="20"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>

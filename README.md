@@ -1,8 +1,18 @@
-# Disconnecting for good: understanding how interventionsbased on social network analysis could reduce the spread ofthe COVID-19 and increase self-isolation adherence
+# Opinion Contagion Model
 
 
-### Running Netlogo script
+##### Disconnecting for the good: A network-oriented model for social contagion of opinions and social network interventions to increase adherence to social distancing
 
+
+###### Eric Araujo (eric at ufla dot br)
+
+---
+
+This repository contains the codes and results obtained for the paper "Disconnecting for the good: A network-oriented model for social contagion of opinions and social network interventions to increase adherence to social distancing". 
+
+# Running Netlogo script
+
+To run the simulations use the following command lines. These commands were tested on a Mac OSx 10.15.4
 
 ```
 ./netlogo-headless.sh \
@@ -20,9 +30,10 @@
   --spreadsheet ../results/basic_100_people_end_spreadsheet.csv
 ```
 
-
+```
 ./netlogo-headless.sh \
   --model Simulation.nlogo \
   --experiment Interventions_100_people_End \
   --table ../results/interv_100_people_end_table.csv \
   --spreadsheet ../results/interv_100_people_end_spreadsheet.csv
+```
