@@ -22,8 +22,8 @@ column_change_names = {
     #'debug?', 
     'nw-type': 'nw_topology', 
     '[step]': 'step',
-    'count people with [lockdown?]': 'num_lockdown', 
-    'count people with [not lockdown?]': 'num_not_lockdown',
+    'count people with [social-distancing?]': 'num_social_distancing', 
+    'count people with [not social-distancing?]': 'num_not_social_distancing',
     'mean [opinion] of people': 'opinion_avg',
     'standard-deviation [opinion] of people': 'opinion_std',
     'intervention-type': 'interv_type'
@@ -85,14 +85,14 @@ def get_opinions (df):
 
     return f_df
 
-def get_perc_lockdown (df):
+def get_perc_adherence (df):
     beta_list = [0.1, 0.3, 0.5, 0.7, 0.9]
     sigma_list = [1, 5, 10]
     
     f_df = pd.DataFrame()
     
     for beta, sigma in [(x,y) for x in beta_list for y in sigma_list]:
-        f_df['({},{})'.format(beta,sigma)] = pd.Series(list(df[(df.beta == beta) & (df.sigma == sigma)].num_lockdown))
+        f_df['({},{})'.format(beta,sigma)] = pd.Series(list(df[(df.beta == beta) & (df.sigma == sigma)].num_social_distancing))
 
     return f_df
 

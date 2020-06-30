@@ -1090,8 +1090,8 @@ NetLogo 6.1.1
   <experiment name="Basic_100_people" repetitions="100" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
-    <metric>count people with [lockdown?]</metric>
-    <metric>count people with [not lockdown?]</metric>
+    <metric>count people with [social-distancing?]</metric>
+    <metric>count people with [not social-distancing?]</metric>
     <metric>mean [opinion] of people</metric>
     <metric>standard-deviation [opinion] of people</metric>
     <enumeratedValueSet variable="beta-gov">
@@ -1131,8 +1131,8 @@ NetLogo 6.1.1
   <experiment name="Basic_100_people_End" repetitions="100" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
-    <metric>count people with [lockdown?]</metric>
-    <metric>count people with [not lockdown?]</metric>
+    <metric>count people with [social-distancing?]</metric>
+    <metric>count people with [not social-distancing?]</metric>
     <metric>mean [opinion] of people</metric>
     <metric>standard-deviation [opinion] of people</metric>
     <enumeratedValueSet variable="beta-gov">
@@ -1172,8 +1172,8 @@ NetLogo 6.1.1
   <experiment name="Interventions_100_people_End" repetitions="100" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
-    <metric>count people with [lockdown?]</metric>
-    <metric>count people with [not lockdown?]</metric>
+    <metric>count people with [social-distancing?]</metric>
+    <metric>count people with [not social-distancing?]</metric>
     <metric>mean [opinion] of people</metric>
     <metric>standard-deviation [opinion] of people</metric>
     <enumeratedValueSet variable="beta-gov">
@@ -1221,8 +1221,8 @@ NetLogo 6.1.1
   <experiment name="Interventions_100_people_End_20" repetitions="100" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
-    <metric>count people with [lockdown?]</metric>
-    <metric>count people with [not lockdown?]</metric>
+    <metric>count people with [social-distancing?]</metric>
+    <metric>count people with [not social-distancing?]</metric>
     <metric>mean [opinion] of people</metric>
     <metric>standard-deviation [opinion] of people</metric>
     <enumeratedValueSet variable="beta-gov">
