@@ -4,23 +4,23 @@ extensions [nw palette rngs stats]
 breed [people person]
 
 people-own [
-  opinion        ; [0,1]
-  opinion_old    ; for the sake of keeping memory
-  age            ;
-  education      ; [0,1]
-  ;familyID       ;
-  wealth         ; [0,1]
-  gender         ; 0 male | 1 female
-  tau            ; threshold for changes
-  lockdown?      ; true if the person adhered to lockdown
+  opinion                   ; [0,1]
+  opinion_old               ; for the sake of keeping memory
+  age                       ;
+  education                 ; [0,1]
+  ;familyID                 ;
+  wealth                    ; [0,1]
+  gender                    ; 0 male | 1 female
+  tau                       ; threshold for changes
+  social-distancing?       ; true if the person adhered to social distancing behaviour
   ;;;;;; variables for the model
-  q*             ; total impact from other neighbors
-  omega          ; sum of edges weights
-  eta            ; speed factor
+  q*                        ; total impact from other neighbors
+  omega                     ; sum of edges weights
+  eta                       ; speed factor
   ;;;;;; nw variabes
   interv-target?
-  degree         ; degree of the node
-  neigh_lockdown ; number of neighbors in lockdown
+  degree                    ; degree of the node
+  neigh-adhered             ; number of neighbors partaking the protocol
   eigen
   betweenness
   closeness
@@ -201,7 +201,7 @@ to setup-people
     ; http://ccl.northwestern.edu/papers/ABMVisualizationGuidelines/palette/doc/NetLogo%20Color%20Howto%202.htm
     set color palette:scale-scheme  "Divergent" "RdYlGn" 4 opinion 0 1
 
-    set lockdown? false
+    set social-distancing? false
     set interv-target? false
     ; network already created
     set degree count my-links
@@ -269,28 +269,28 @@ to setup-interventions
   ifelse intervention-type = "eigen" [
     ask max-n-of num_intervention people [eigen][
       set opinion 1
-      set lockdown? true
+      set social-distancing? true
       set interv-target? true
     ]
   ][
     ifelse intervention-type = "degree" [
       ask max-n-of num_intervention people [degree][
         set opinion 1
-        set lockdown? true
+        set social-distancing? true
         set interv-target? true
       ]
     ][
       ifelse intervention-type = "betweenness" [
         ask max-n-of num_intervention people [betweenness][
           set opinion 1
-          set lockdown? true
+          set social-distancing? true
           set interv-target? true
         ]
       ][
         ifelse intervention-type = "closeness" [
           ask max-n-of num_intervention people [closeness][
             set opinion 1
-            set lockdown? true
+            set social-distancing? true
             set interv-target? true
           ]
         ][
@@ -307,7 +307,7 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to go
   update-opinion
-  update-lockdown
+  update-social-distancing
   if graphics? [
     setup-plot
     update-colors
@@ -371,20 +371,20 @@ to update-opinion
   ]
 end
 
-to update-lockdown
+to update-social-distancing
   ; before changes, save the number of neighbors
-  ask people[ set neigh_lockdown count link-neighbors with [lockdown?] ]
+  ask people[ set neigh-adhered count link-neighbors with [social-distancing?] ]
 
   ask people with [not interv-target?][
     if debug? [
       type "Agent: " type [who] of self type " has degree " type degree type "\n"
-      type "Number of neighbors in lockdown: " type count link-neighbors with [lockdown?] type "\n"
+      type "Number of neighbors in social-distancing: " type count link-neighbors with [social-distancing?] type "\n"
     ]
     ifelse random-float 1 > opinion [
-      set lockdown? false
+      set social-distancing? false
     ][
-      ;if neigh_lockdown > degree / 2 [set lockdown? true]
-      set lockdown? true
+      ;if neigh-adhered > degree / 2 [set social-distancing? true]
+      set social-distancing? true
     ]
 
   ] ; end of ask people
@@ -393,7 +393,7 @@ end
 to update-colors
   ask people [
     set color palette:scale-scheme  "Divergent" "RdYlGn" 4 opinion 0 1
-    ifelse lockdown? [
+    ifelse social-distancing? [
       ask patches in-radius 1 [set pcolor blue]
     ][
       ask patches in-radius 1 [set pcolor red]
@@ -451,13 +451,13 @@ to setup-plot
     plotxy ticks opinion
   ]
 
-  set-current-plot "Lockdown" ;; identify which plot to use
-  create-temporary-plot-pen "Lockdown"
+  set-current-plot "Social Distancing Adherence" ;; identify which plot to use
+  create-temporary-plot-pen "Adherence"
   set-plot-pen-color blue
-  plot count people with [lockdown?] * 100 / count people
-  create-temporary-plot-pen "Not Lockdown"
+  plot count people with [social-distancing?] * 100 / count people
+  create-temporary-plot-pen "No Adherence"
   set-plot-pen-color red
-  plot count people with [not lockdown?] * 100 / count people
+  plot count people with [not social-distancing?] * 100 / count people
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -587,7 +587,7 @@ layout-type
 PLOT
 248
 10
-592
+766
 241
 Opinions
 NIL
@@ -632,7 +632,7 @@ TEXTBOX
 242
 218
 310
-beta-gov is the health authorities engagement to the lockdown policy
+beta-gov is the health authorities engagement to the social distancing policy
 14
 0.0
 1
@@ -651,9 +651,9 @@ graphics?
 PLOT
 246
 248
-593
+767
 464
-Lockdown
+Social Distancing Adherence
 NIL
 NIL
 0.0
@@ -668,7 +668,7 @@ PENS
 PLOT
 248
 476
-448
+761
 626
 Opinion (mean)
 NIL
@@ -737,11 +737,13 @@ HORIZONTAL
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+This model aims to understand how opinion about adhering to social distancing spread in a number of different network topologies, and how interventions based on network metrics could benefit the whole network.
 
 ## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+The agents are connected based on homophily. That is, the strength of the links is based on the traits of the agents, including age, wealth, education, etc. Agents are influenced by their neighbors and the spread of the opinions follows the social contagion model provided by the paper 
+
+*Araújo, E., Ferro, M, Silva, G.* **Disconnecting for the good: A network-oriented model for social contagion of opinions and social network interventions to increase adherence to social distancing**. BraSNAM, 2020.
 
 ## HOW TO USE IT
 
@@ -769,7 +771,11 @@ HORIZONTAL
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+Araújo, E., Ferro, M, Silva, G. **Disconnecting for the good: A network-oriented model for social contagion of opinions and social network interventions to increase adherence to social distancing**. BraSNAM, 2020.
+
+https://www.lncc.br/
+
+https://bilbo.dcc.ufla.br/
 @#$#@#$#@
 default
 true
